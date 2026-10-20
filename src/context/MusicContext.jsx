@@ -230,9 +230,34 @@ export const MusicProvider = ({ children }) => {
     const onEnded = () => {
       handleTrackEnd();
     };
+const GENRE_FALLBACKS = {
+  'Mass': './anirudh song/Aaya Sher.mp3',
+  'Melody': './illayaraja/Kaattumalli-MassTamilan.dev.mp3',
+  'Classical': './illayaraja/Arutperunjodhi-MassTamilan.dev.mp3',
+  'Folk': './illayaraja/Arutperunjodhi-MassTamilan.dev.mp3',
+  'Indie': './sai abhyankar/Katchi Sera - MassTamilan.mp3',
+  'HipHop': './hiphop tamizha/Adi Podi.mp3',
+  'Rock': './hiphop tamizha/Vibe Venuma.mp3',
+  'EDM': './anirudh song/Coolie Disco - MassTamilan.mp3',
+  'Devotional': './illayaraja/Arutperunjodhi-MassTamilan.dev.mp3',
+  'Default': './illayaraja/Kaattumalli-MassTamilan.dev.mp3'
+};
+
     const onError = (e) => {
-      console.warn("Audio error encountered for track:", audio.src, e);
-      startSyntheticAudio(currentTrack);
+      console.warn("Audio file error for track:", audio.src, e);
+      const track = currentTrack;
+      const fallback = (track && GENRE_FALLBACKS[track.genre]) || GENRE_FALLBACKS['Default'];
+      const cleanFallback = fallback.replace(/^\.\//, '');
+      if (audio.src && !audio.src.includes(cleanFallback)) {
+        console.log("Playing genre-matched real audio fallback:", fallback);
+        audio.src = fallback;
+        audio.load();
+        audio.play().then(() => {
+          setIsPlaying(true);
+        }).catch(() => startSyntheticAudio(track));
+      } else {
+        startSyntheticAudio(track);
+      }
     };
 
     audio.addEventListener('play', onPlay);
@@ -348,7 +373,17 @@ export const MusicProvider = ({ children }) => {
       setIsPlaying(true);
     }).catch(err => {
       console.warn("Primary track playback failed:", err);
-      startSyntheticAudio(track);
+      const fallback = (track && GENRE_FALLBACKS[track.genre]) || GENRE_FALLBACKS['Default'];
+      const cleanFallback = fallback.replace(/^\.\//, '');
+      if (audio.src && !audio.src.includes(cleanFallback)) {
+        audio.src = fallback;
+        audio.load();
+        audio.play().then(() => {
+          setIsPlaying(true);
+        }).catch(() => startSyntheticAudio(track));
+      } else {
+        startSyntheticAudio(track);
+      }
     });
   };
 
