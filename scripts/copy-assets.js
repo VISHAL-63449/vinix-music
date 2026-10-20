@@ -42,12 +42,9 @@ for (const target of targets) {
     fs.mkdirSync(target, { recursive: true });
   }
 
-  // Copy dist build files into docs/ and assets/
+  // Copy dist build files into docs/
   if (target.endsWith('docs') && fs.existsSync(path.resolve(root, 'dist'))) {
-    fs.cpSync(path.resolve(root, 'dist'), target, {
-      recursive: true,
-      filter: (src) => !src.endsWith('.mp3') && !src.endsWith('.wav')
-    });
+    fs.cpSync(path.resolve(root, 'dist'), target, { recursive: true });
   }
 
   // Copy image files
@@ -59,18 +56,12 @@ for (const target of targets) {
     }
   }
 
-  // Copy folders excluding audio
+  // Copy media folders including audio
   for (const folder of imageFolders) {
     const src = path.resolve(root, folder);
     const dest = path.resolve(target, folder);
     if (fs.existsSync(src)) {
-      fs.cpSync(src, dest, {
-        recursive: true,
-        filter: (file) => {
-          const lower = file.toLowerCase();
-          return !lower.endsWith('.mp3') && !lower.endsWith('.wav') && !lower.endsWith('.m4a');
-        }
-      });
+      fs.cpSync(src, dest, { recursive: true });
     }
   }
 }
