@@ -38,8 +38,8 @@ export const Sidebar = () => {
             if (mainScroll) mainScroll.scrollTo({ top: 0, behavior: 'smooth' });
           }}
         >
-          <img src="/vinix-logo.png" alt="Vinix Music Logo" className="brand-logo-img" />
-          <img src="/vinix-title-transparent.png" alt="Vinix Music" className="brand-title-text-img" />
+          <img src="./vinix-logo.png" alt="Vinix Music Logo" className="brand-logo-img" />
+          <img src="./vinix-title-transparent.png" alt="Vinix Music" className="brand-title-text-img" />
           <span className="brand-badge">PRO</span>
         </div>
 

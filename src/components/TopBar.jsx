@@ -116,12 +116,12 @@ export const TopBar = () => {
             }}
           >
             <div className="brand-logo-container">
-              <img src="/vinix-logo.png" alt="Vinix Music" className="mobile-logo-thumb" />
+              <img src="./vinix-logo.png" alt="Vinix Music" className="mobile-logo-thumb" />
               <div className="brand-glow-halo" />
             </div>
             <div className="brand-text-block">
               <div className="brand-title-row">
-                <img src="/vinix-title-transparent.png" alt="Vinix Music" className="mobile-brand-title-img" />
+                <img src="./vinix-title-transparent.png" alt="Vinix Music" className="mobile-brand-title-img" />
                 <span className="audio-quality-pill">
                   <span className="pulse-dot-green" />
                   <span className="pill-text">HI-RES</span>
@@ -398,7 +398,7 @@ export const TopBar = () => {
         <div className="login-modal-overlay" onClick={() => setShowLoginModal(false)}>
           <div className="login-modal-card" onClick={e => e.stopPropagation()}>
             <div className="login-modal-header">
-              <img src="/vinix-logo.png" alt="Vinix Music" style={{ width: 48, height: 48, borderRadius: 10, boxShadow: '0 0 20px rgba(239, 68, 68, 0.4)' }} />
+              <img src="./vinix-logo.png" alt="Vinix Music" style={{ width: 48, height: 48, borderRadius: 10, boxShadow: '0 0 20px rgba(239, 68, 68, 0.4)' }} />
               <h3>Sign in to Vinix Music</h3>
               <p>Experience ultra high fidelity audio & sync your favorites.</p>
             </div>

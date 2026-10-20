@@ -364,7 +364,7 @@ export const MusicProvider = ({ children }) => {
       id: `pl_user_${Date.now()}`,
       name: name || `My Playlist #${playlists.length + 1}`,
       description: "Custom user playlist created on Vinix Music",
-      cover: currentTrack?.img || "/vinix-logo.png",
+      cover: currentTrack?.img || "./vinix-logo.png",
       trackIds: [currentTrack?.id].filter(Boolean),
       curator: "You",
       color: "#1DB954"

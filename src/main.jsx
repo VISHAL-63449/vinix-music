@@ -11,3 +11,5 @@ ReactDOM.createRoot(document.getElementById('root')).render(
     </MusicProvider>
   </React.StrictMode>
 );
+
+window.__VINIX_MOUNTED__ = true;

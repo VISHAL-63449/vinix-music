@@ -1,6 +1,13 @@
 // Auto-generated & synced with all local media files
 
-export const ARTISTS = [
+const resolvePath = (p) => {
+  if (typeof p !== 'string') return p;
+  if (p.startsWith('http') || p.startsWith('data:') || p.startsWith('blob:')) return p;
+  if (p.startsWith('/')) return '.' + p;
+  return p;
+};
+
+const RAW_ARTISTS = [
   {
     "id": "anirudh",
     "name": "Anirudh Ravichander",
@@ -242,7 +249,7 @@ export const ARTISTS = [
   }
 ];
 
-export const SONGS = [
+const RAW_SONGS = [
   {
     "id": "anirudh_1",
     "artistId": "anirudh",
@@ -2015,7 +2022,7 @@ export const SONGS = [
   }
 ];
 
-export const PLAYLISTS = [
+const RAW_PLAYLISTS = [
   {
     id: "pl_new_releases",
     name: "🔥 New Releases & Fresh Drops",
@@ -2081,7 +2088,7 @@ export const PLAYLISTS = [
   }
 ];
 
-export const GENRES = [
+const RAW_GENRES = [
   { id: "mass", name: "Mass & Kuthu", color: "#E11D48", img: "/anirudh song/oru pera varalaru.jpeg" },
   { id: "melody", name: "Romantic Melodies", color: "#7C3AED", img: "/ar rahmon song/neethane.jpeg" },
   { id: "indie", name: "Indie Pop & R&B", color: "#0284C7", img: "/sai abhyankar/katchi sera.jpeg" },
@@ -2091,6 +2098,28 @@ export const GENRES = [
   { id: "edm", name: "EDM & Club Hits", color: "#4F46E5", img: "/thamon s/thamon s.jpeg" },
   { id: "devotional", name: "Spiritual & Anthems", color: "#CA8A04", img: "/album song/kaakum vadivel.jpeg" }
 ];
+
+export const ARTISTS = RAW_ARTISTS.map(a => ({
+  ...a,
+  image: resolvePath(a.image),
+  banner: resolvePath(a.banner)
+}));
+
+export const SONGS = RAW_SONGS.map(s => ({
+  ...s,
+  img: resolvePath(s.img),
+  file: resolvePath(s.file)
+}));
+
+export const PLAYLISTS = RAW_PLAYLISTS.map(p => ({
+  ...p,
+  cover: resolvePath(p.cover)
+}));
+
+export const GENRES = RAW_GENRES.map(g => ({
+  ...g,
+  img: resolvePath(g.img)
+}));
 
 export const SAMPLE_LYRICS = {
   // Key lyric highlights
