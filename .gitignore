@@ -1,13 +1,9 @@
-# Large Media Files
+# Ignore untracked large audio files
 *.mp3
 *.wav
 *.flac
 *.ogg
 *.m4a
-*.aac
-*.aiff
-!assets/audio-preview.mp3
-!docs/assets/audio-preview.mp3
 
 # Node & Build artifacts
 node_modules/

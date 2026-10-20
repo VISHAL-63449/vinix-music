@@ -231,21 +231,8 @@ export const MusicProvider = ({ children }) => {
       handleTrackEnd();
     };
     const onError = (e) => {
-      console.warn("Audio error encountered:", e);
-      const previewSrc = './assets/audio-preview.mp3';
-      if (!audio.src.includes('audio-preview.mp3')) {
-        console.log("Switching to preview audio stream...");
-        audio.src = previewSrc;
-        audio.load();
-        audio.play().then(() => {
-          setIsPlaying(true);
-        }).catch(err => {
-          console.warn("Audio preview prevented, activating procedural synth:", err);
-          startSyntheticAudio(currentTrack);
-        });
-      } else {
-        startSyntheticAudio(currentTrack);
-      }
+      console.warn("Audio error encountered for track:", audio.src, e);
+      startSyntheticAudio(currentTrack);
     };
 
     audio.addEventListener('play', onPlay);
@@ -360,15 +347,8 @@ export const MusicProvider = ({ children }) => {
     audio.play().then(() => {
       setIsPlaying(true);
     }).catch(err => {
-      console.warn("Primary track playback failed, switching to fallback:", err);
-      audio.src = './assets/audio-preview.mp3';
-      audio.load();
-      audio.play().then(() => {
-        setIsPlaying(true);
-      }).catch(fallbackErr => {
-        console.warn("Fallback prevented, activating synth:", fallbackErr);
-        startSyntheticAudio(track);
-      });
+      console.warn("Primary track playback failed:", err);
+      startSyntheticAudio(track);
     });
   };
 
