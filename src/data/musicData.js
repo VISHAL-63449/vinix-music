@@ -251,6 +251,86 @@ const RAW_ARTISTS = [
 
 const RAW_SONGS = [
   {
+    "id": "saiabhyankar_veezha_veera",
+    "artistId": "saiabhyankar",
+    "artist": "Sai Abhyankar",
+    "title": "Veezha Veera",
+    "album": "Single",
+    "duration": "3:58",
+    "durationSec": 238,
+    "img": "/sai abhyankar/veera veera song.webp",
+    "file": "/sai abhyankar/Veezha Veera.mp3",
+    "genre": "Indie Pop",
+    "plays": 1296029,
+    "accent": "#F43F5E",
+    "isNew": true
+  },
+
+  {
+    "id": "arrahman_muzumathi",
+    "artistId": "arrahman",
+    "artist": "A.R. Rahman",
+    "title": "Muzumathi",
+    "album": "Single",
+    "duration": "5:12",
+    "durationSec": 312,
+    "img": "/ar rahmon song/muzumathi.jpeg",
+    "file": "/ar rahmon song/Muzumathi-MassTamilan.dev.mp3",
+    "genre": "Melody",
+    "plays": 4893041,
+    "accent": "#38BDF8",
+    "isNew": true
+  },
+
+  {
+    "id": "illayaraja_kalyana_virundhu",
+    "artistId": "illayaraja",
+    "artist": "Ilaiyaraaja",
+    "title": "Kalyana Virundhu",
+    "album": "Single",
+    "duration": "3:58",
+    "durationSec": 238,
+    "img": "/illayaraja/kalyana virundhu.webp",
+    "file": "/illayaraja/Kalyana Virundhu.mp3",
+    "genre": "Classical",
+    "plays": 4630457,
+    "accent": "#F59E0B",
+    "isNew": true
+  },
+
+  {
+    "id": "hiphoptamizha_saitji",
+    "artistId": "hiphoptamizha",
+    "artist": "Hiphop Tamizha",
+    "title": "Saitji Saitji",
+    "album": "Single",
+    "duration": "4:26",
+    "durationSec": 266,
+    "img": "/hiphop tamizha/satji.jpeg",
+    "file": "/hiphop tamizha/Saitji-Saitji-MassTamilan.com.mp3",
+    "genre": "HipHop",
+    "plays": 2878639,
+    "accent": "#D97706",
+    "isNew": true
+  },
+
+  {
+    "id": "hiphoptamizha_red_card",
+    "artistId": "hiphoptamizha",
+    "artist": "Hiphop Tamizha",
+    "title": "Red Cardu",
+    "album": "Single",
+    "duration": "3:29",
+    "durationSec": 209,
+    "img": "/hiphop tamizha/red card.webp",
+    "file": "/hiphop tamizha/Red-Cardu-MassTamilan.org.mp3",
+    "genre": "HipHop",
+    "plays": 1403907,
+    "accent": "#D97706",
+    "isNew": true
+  },
+
+  {
     "id": "anirudh_1",
     "artistId": "anirudh",
     "artist": "Anirudh Ravichander",
@@ -2028,7 +2108,7 @@ const RAW_PLAYLISTS = [
     name: "🔥 New Releases & Fresh Drops",
     description: "The brand new songs and singles just added to Vinix Music.",
     cover: "/anirudh song/the-paradise-aaye sher.webp",
-    trackIds: ["anirudh_1", "anirudh_2", "anirudh_3", "anirudh_8", "saiabhyankar_40", "saiabhyankar_45", "saiabhyankar_49", "saiabhyankar_54", "hiphoptamizha_73", "hiphoptamizha_82", "album_song_108", "album_song_110"],
+    trackIds: ["saiabhyankar_veezha_veera", "arrahman_muzumathi", "illayaraja_kalyana_virundhu", "hiphoptamizha_saitji", "hiphoptamizha_red_card", "anirudh_1", "anirudh_2", "anirudh_3", "anirudh_8", "saiabhyankar_40", "saiabhyankar_45", "saiabhyankar_49", "saiabhyankar_54", "hiphoptamizha_73", "hiphoptamizha_82", "album_song_108", "album_song_110"],
     curator: "Fresh Drops",
     color: "#1DB954"
   },
