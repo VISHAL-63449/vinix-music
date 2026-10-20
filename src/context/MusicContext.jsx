@@ -95,30 +95,157 @@ export const MusicProvider = ({ children }) => {
   const sourceNodeRef = useRef(null);
   const isAudioInitializedRef = useRef(false);
 
+  // Synthetic / Procedural Audio Refs
+  const isSyntheticPlayingRef = useRef(false);
+  const synthTimerRef = useRef(null);
+  const synthOscRef = useRef(null);
+  const synthGainRef = useRef(null);
+
   // Save favorites
   useEffect(() => {
     localStorage.setItem('vr_favorites', JSON.stringify(favorites));
   }, [favorites]);
 
+  const stopSyntheticAudio = () => {
+    isSyntheticPlayingRef.current = false;
+    if (synthTimerRef.current) {
+      clearInterval(synthTimerRef.current);
+      synthTimerRef.current = null;
+    }
+    if (synthOscRef.current) {
+      try {
+        synthOscRef.current.stop();
+        synthOscRef.current.disconnect();
+      } catch (e) {}
+      synthOscRef.current = null;
+    }
+  };
+
+  const startSyntheticAudio = (track) => {
+    stopSyntheticAudio();
+    isSyntheticPlayingRef.current = true;
+    setIsPlaying(true);
+    const targetDur = track?.durationSec || 210;
+    setDuration(targetDur);
+
+    try {
+      const AudioCtx = window.AudioContext || window.webkitAudioContext;
+      if (!audioContextRef.current) {
+        audioContextRef.current = new AudioCtx();
+      }
+      const ctx = audioContextRef.current;
+      if (ctx.state === 'suspended') {
+        ctx.resume();
+      }
+
+      if (!analyserRef.current) {
+        const analyser = ctx.createAnalyser();
+        analyser.fftSize = 128;
+        analyser.smoothingTimeConstant = 0.8;
+        analyser.connect(ctx.destination);
+        analyserRef.current = analyser;
+      }
+
+      const osc = ctx.createOscillator();
+      const filter = ctx.createBiquadFilter();
+      const gain = ctx.createGain();
+
+      osc.type = 'triangle';
+      osc.frequency.setValueAtTime(220, ctx.currentTime);
+
+      filter.type = 'lowpass';
+      filter.frequency.setValueAtTime(650, ctx.currentTime);
+
+      const targetVol = isMuted ? 0 : volume * 0.12;
+      gain.gain.setValueAtTime(targetVol, ctx.currentTime);
+
+      osc.connect(filter);
+      filter.connect(gain);
+      gain.connect(analyserRef.current);
+
+      osc.start();
+      synthOscRef.current = osc;
+      synthGainRef.current = gain;
+
+      let step = 0;
+      const notes = [220, 261.63, 329.63, 392.00, 329.63, 261.63];
+      const tempo = setInterval(() => {
+        if (!isSyntheticPlayingRef.current || !synthOscRef.current) {
+          clearInterval(tempo);
+          return;
+        }
+        step = (step + 1) % notes.length;
+        synthOscRef.current.frequency.setTargetAtTime(notes[step], ctx.currentTime, 0.08);
+      }, 500);
+
+      const startTime = Date.now() - (currentTime * 1000);
+      synthTimerRef.current = setInterval(() => {
+        if (!isSyntheticPlayingRef.current) return;
+        const elapsed = (Date.now() - startTime) / 1000;
+        if (elapsed >= targetDur) {
+          stopSyntheticAudio();
+          handleTrackEnd();
+        } else {
+          setCurrentTime(elapsed);
+        }
+      }, 250);
+    } catch (err) {
+      console.warn("Synth fallback error:", err);
+      synthTimerRef.current = setInterval(() => {
+        setCurrentTime(prev => {
+          const next = prev + 0.25;
+          if (next >= targetDur) {
+            stopSyntheticAudio();
+            handleTrackEnd();
+            return 0;
+          }
+          return next;
+        });
+      }, 250);
+    }
+  };
+
   // Audio Setup
   useEffect(() => {
     const audio = new Audio();
     audio.preload = 'metadata';
-    audio.crossOrigin = 'anonymous';
     audioRef.current = audio;
 
     const onPlay = () => setIsPlaying(true);
-    const onPause = () => setIsPlaying(false);
-    const onTimeUpdate = () => setCurrentTime(audio.currentTime);
+    const onPause = () => {
+      if (!isSyntheticPlayingRef.current) {
+        setIsPlaying(false);
+      }
+    };
+    const onTimeUpdate = () => {
+      if (!isSyntheticPlayingRef.current) {
+        setCurrentTime(audio.currentTime);
+      }
+    };
     const onLoadedMetadata = () => {
-      setDuration(audio.duration || 0);
+      if (audio.duration && !isNaN(audio.duration)) {
+        setDuration(audio.duration);
+      }
     };
     const onEnded = () => {
       handleTrackEnd();
     };
     const onError = (e) => {
       console.warn("Audio error encountered:", e);
-      setIsPlaying(false);
+      const previewSrc = './assets/audio-preview.mp3';
+      if (!audio.src.includes('audio-preview.mp3')) {
+        console.log("Switching to preview audio stream...");
+        audio.src = previewSrc;
+        audio.load();
+        audio.play().then(() => {
+          setIsPlaying(true);
+        }).catch(err => {
+          console.warn("Audio preview prevented, activating procedural synth:", err);
+          startSyntheticAudio(currentTrack);
+        });
+      } else {
+        startSyntheticAudio(currentTrack);
+      }
     };
 
     audio.addEventListener('play', onPlay);
@@ -128,7 +255,6 @@ export const MusicProvider = ({ children }) => {
     audio.addEventListener('ended', onEnded);
     audio.addEventListener('error', onError);
 
-    // Initial source
     if (SONGS[0]) {
       audio.src = SONGS[0].file;
     }
@@ -141,6 +267,7 @@ export const MusicProvider = ({ children }) => {
       audio.removeEventListener('loadedmetadata', onLoadedMetadata);
       audio.removeEventListener('ended', onEnded);
       audio.removeEventListener('error', onError);
+      stopSyntheticAudio();
     };
   }, []);
 
@@ -150,8 +277,8 @@ export const MusicProvider = ({ children }) => {
     try {
       const AudioCtx = window.AudioContext || window.webkitAudioContext;
       if (!AudioCtx) return;
-      const ctx = new AudioCtx();
-      const analyser = ctx.createAnalyser();
+      const ctx = audioContextRef.current || new AudioCtx();
+      const analyser = analyserRef.current || ctx.createAnalyser();
       analyser.fftSize = 128;
       analyser.smoothingTimeConstant = 0.8;
 
@@ -164,13 +291,24 @@ export const MusicProvider = ({ children }) => {
       sourceNodeRef.current = source;
       isAudioInitializedRef.current = true;
     } catch (err) {
-      console.warn("Web Audio API could not connect to media element directly:", err);
+      console.warn("Web Audio API media element connect note:", err);
     }
   };
 
   // Play / Pause toggler
   const togglePlay = () => {
     const audio = audioRef.current;
+
+    if (isSyntheticPlayingRef.current) {
+      if (isPlaying) {
+        stopSyntheticAudio();
+        setIsPlaying(false);
+      } else {
+        startSyntheticAudio(currentTrack);
+      }
+      return;
+    }
+
     if (!audio) return;
 
     if (isPlaying) {
@@ -181,7 +319,8 @@ export const MusicProvider = ({ children }) => {
         audioContextRef.current.resume();
       }
       audio.play().catch(err => {
-        console.warn("Audio play prevented:", err);
+        console.warn("Audio play prevented, activating procedural sound:", err);
+        startSyntheticAudio(currentTrack);
       });
     }
   };
@@ -189,6 +328,7 @@ export const MusicProvider = ({ children }) => {
   // Play a specific track
   const playTrack = (track, newQueue = null) => {
     if (!track) return;
+    stopSyntheticAudio();
     const audio = audioRef.current;
     if (!audio) return;
 
@@ -198,6 +338,8 @@ export const MusicProvider = ({ children }) => {
     }
 
     setCurrentTrack(track);
+    setCurrentTime(0);
+    setDuration(track.durationSec || 210);
 
     if (newQueue) {
       setQueue(newQueue);
@@ -218,7 +360,15 @@ export const MusicProvider = ({ children }) => {
     audio.play().then(() => {
       setIsPlaying(true);
     }).catch(err => {
-      console.warn("Playback could not start:", err);
+      console.warn("Primary track playback failed, switching to fallback:", err);
+      audio.src = './assets/audio-preview.mp3';
+      audio.load();
+      audio.play().then(() => {
+        setIsPlaying(true);
+      }).catch(fallbackErr => {
+        console.warn("Fallback prevented, activating synth:", fallbackErr);
+        startSyntheticAudio(track);
+      });
     });
   };
 
@@ -284,10 +434,11 @@ export const MusicProvider = ({ children }) => {
   };
 
   const seekTo = (percent) => {
-    if (!audioRef.current || !duration) return;
-    const target = (percent / 100) * duration;
-    audioRef.current.currentTime = target;
+    const target = (percent / 100) * (duration || 210);
     setCurrentTime(target);
+    if (audioRef.current && !isSyntheticPlayingRef.current) {
+      audioRef.current.currentTime = target;
+    }
   };
 
   const handleVolumeChange = (newVal) => {
@@ -296,18 +447,26 @@ export const MusicProvider = ({ children }) => {
     if (audioRef.current) {
       audioRef.current.volume = vol;
     }
+    if (synthGainRef.current && audioContextRef.current) {
+      synthGainRef.current.gain.setValueAtTime(vol * 0.12, audioContextRef.current.currentTime);
+    }
     if (vol > 0 && isMuted) {
       setIsMuted(false);
     }
   };
 
   const toggleMute = () => {
-    if (!audioRef.current) return;
     if (isMuted) {
-      audioRef.current.volume = volume;
+      if (audioRef.current) audioRef.current.volume = volume;
+      if (synthGainRef.current && audioContextRef.current) {
+        synthGainRef.current.gain.setValueAtTime(volume * 0.12, audioContextRef.current.currentTime);
+      }
       setIsMuted(false);
     } else {
-      audioRef.current.volume = 0;
+      if (audioRef.current) audioRef.current.volume = 0;
+      if (synthGainRef.current && audioContextRef.current) {
+        synthGainRef.current.gain.setValueAtTime(0, audioContextRef.current.currentTime);
+      }
       setIsMuted(true);
     }
   };

@@ -6,6 +6,8 @@
 *.m4a
 *.aac
 *.aiff
+!assets/audio-preview.mp3
+!docs/assets/audio-preview.mp3
 
 # Node & Build artifacts
 node_modules/
