@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login - VR Music</title>
+    <link rel="stylesheet" href="login.css?v=3.0">
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+
+<body>
+    <!-- Background Auroras & Texture -->
+    <div class="background-image"></div>
+    <div class="aurora-circle aurora-1"></div>
+    <div class="aurora-circle aurora-2"></div>
+    <div class="aurora-circle aurora-3"></div>
+    <div class="noise-overlay"></div>
+
+    <div class="login-container">
+        <div class="login-header">
+            <div class="logo-wrapper">
+                <img src="mus logo.webp" alt="Music Logo" class="app-logo">
+            </div>
+            <h1>VR Music</h1>
+            <p>Experience music in premium VR spaces.</p>
+        </div>
+
+        <!-- Auth Tabs -->
+        <div class="tabs">
+            <button class="tab active" id="tab-login">Login</button>
+            <button class="tab" id="tab-signup">Register</button>
+        </div>
+
+        <div class="form-container">
+            <!-- Login Form -->
+            <form id="login-form">
+                <div class="input-group">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" id="email" placeholder="Gmail / Email" required>
+                </div>
+
+                <div class="input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="password" placeholder="Password" required>
+                </div>
+
+                <button type="submit" class="login-btn">Log In</button>
+
+                <div class="divider">
+                    <span>OR</span>
+                </div>
+
+                <button type="button" class="google-btn" onclick="openGoogleLogin()">
+                    <i class="fa-brands fa-google"></i> Continue with Google
+                </button>
+            </form>
+
+            <!-- Register Form -->
+            <form id="signup-form" class="hidden">
+                <div class="input-group">
+                    <i class="fa-solid fa-user"></i>
+                    <input type="text" id="signup-name" placeholder="Full Name" required>
+                </div>
+
+                <div class="input-group">
+                    <i class="fa-solid fa-envelope"></i>
+                    <input type="email" id="signup-email" placeholder="Gmail / Email" required>
+                </div>
+
+                <div class="input-group">
+                    <i class="fa-solid fa-lock"></i>
+                    <input type="password" id="signup-password" placeholder="Choose Password" required>
+                </div>
+
+                <button type="submit" class="login-btn">Create Account</button>
+            </form>
+        </div>
+    </div>
+
+    <!-- Scripts (Database Layer first, then Auth router) -->
+    <script src="mock-backend.js?v=3.0"></script>
+    <script src="login.js?v=3.0"></script>
+</body>
+
+</html>
